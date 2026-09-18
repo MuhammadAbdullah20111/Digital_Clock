@@ -1,122 +1,431 @@
-body {
+/* =========================================
+   3D Digital Clock — Glassmorphism Neon
+   ========================================= */
+
+/* --- CSS Custom Properties --- */
+:root {
+    --neon-primary: #00e5ff;
+    --neon-secondary: #7c4dff;
+    --neon-accent: #ff4081;
+    --glass-bg: rgba(255, 255, 255, 0.04);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: rgba(0, 229, 255, 0.15);
+    --text-primary: #e0f7fa;
+    --text-muted: rgba(224, 247, 250, 0.5);
+    --bg-dark: #0a0e17;
+    --bg-gradient-1: #0d1321;
+    --bg-gradient-2: #1a0a2e;
+}
+
+/* --- Reset & Base --- */
+*, *::before, *::after {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: #1a1a1a;
-    font-family: 'Courier New', monospace;
+    background: var(--bg-dark);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     overflow: hidden;
-}
-
-.clock-container {
-    perspective: 1000px;
-    width: 90%;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.clock {
-    background: #000;
-    padding: 2vw 4vw;
-    border-radius: 10px;
-    transform-style: preserve-3d;
+    color: var(--text-primary);
     position: relative;
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
-    border: 2px solid rgba(0, 255, 0, 0.1);
-    width: 100%;
-    box-sizing: border-box;
 }
 
-.time {
+/* --- Particle Canvas --- */
+#particles {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* --- Ambient Orbs (Background Glow) --- */
+.ambient-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.ambient-orb-1 {
+    width: 500px;
+    height: 500px;
+    background: var(--neon-primary);
+    top: -15%;
+    left: -10%;
+    animation: float-orb-1 18s ease-in-out infinite;
+}
+
+.ambient-orb-2 {
+    width: 450px;
+    height: 450px;
+    background: var(--neon-secondary);
+    bottom: -20%;
+    right: -10%;
+    animation: float-orb-2 22s ease-in-out infinite;
+}
+
+.ambient-orb-3 {
+    width: 350px;
+    height: 350px;
+    background: var(--neon-accent);
+    top: 50%;
+    left: 60%;
+    transform: translate(-50%, -50%);
+    animation: float-orb-3 15s ease-in-out infinite;
+    opacity: 0.18;
+}
+
+@keyframes float-orb-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(80px, 60px) scale(1.1); }
+    66% { transform: translate(-40px, 30px) scale(0.95); }
+}
+
+@keyframes float-orb-2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-60px, -40px) scale(1.05); }
+    66% { transform: translate(50px, -20px) scale(0.9); }
+}
+
+@keyframes float-orb-3 {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-40%, -60%) scale(1.15); }
+}
+
+/* --- Clock Container --- */
+.clock-container {
+    perspective: 1200px;
+    z-index: 1;
     display: flex;
-    gap: 1vw;
-    color: #0f0;
-    font-size: clamp(2rem, 10vw, 5rem);
-    text-shadow: 0 0 10px #0f0;
-    justify-content: center;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 90%;
+    max-width: 900px;
 }
 
-.date {
+/* --- Greeting --- */
+.greeting {
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-muted);
     text-align: center;
-    color: #0f0;
-    font-size: clamp(0.8rem, 3vw, 1.5rem);
-    margin-top: 1vh;
-    text-shadow: 0 0 5px #0f0;
+    animation: fadeInDown 1s ease-out;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .clock {
-        padding: 15px 30px;
-    }
-    
-    .time {
-        gap: 5px;
-        font-size: clamp(1.5rem, 12vw, 3rem);
-    }
-    
-    .colon {
-        animation-duration: 1.2s;
-    }
-}
-
-@media (max-width: 480px) {
-    .clock {
-        padding: 10px 20px;
-        border-radius: 5px;
-    }
-    
-    .time {
-        font-size: clamp(1.2rem, 14vw, 2rem);
-    }
-    
-    .date {
-        font-size: clamp(0.7rem, 3.5vw, 1rem);
-    }
-}
-
-/* Keep existing animations and other styles */
-.colon {
-    animation: blink 1s infinite;
-}
-
-@keyframes blink {
-    50% { opacity: 0; }
+/* --- Glass Clock Card --- */
+.clock {
+    position: relative;
+    width: 100%;
+    padding: clamp(24px, 4vw, 48px) clamp(20px, 5vw, 60px);
+    border-radius: 24px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 80px var(--glass-shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease-out, box-shadow 0.3s ease;
+    overflow: hidden;
 }
 
 .clock::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg,
-        transparent 48%,
-        rgba(0, 255, 0, 0.1) 50%,
-        transparent 52%
+    inset: 0;
+    border-radius: 24px;
+    padding: 1.5px;
+    background: linear-gradient(
+        135deg,
+        var(--neon-primary) 0%,
+        transparent 40%,
+        transparent 60%,
+        var(--neon-secondary) 100%
     );
-    z-index: -1;
-    transform: translateZ(-5px);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.5;
 }
 
-.time span {
-    position: relative;
-    background: rgba(0, 0, 0, 0.2);
-    padding: 0 5px;
-    border-radius: 3px;
-    min-width: 1.2em;
-    text-align: center;
-}
-
-.time span::after {
+.clock::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.2);
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0%,
+        rgba(0, 229, 255, 0.03) 25%,
+        transparent 50%,
+        rgba(124, 77, 255, 0.03) 75%,
+        transparent 100%
+    );
+    animation: rotate-shimmer 12s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rotate-shimmer {
+    100% { transform: rotate(360deg); }
+}
+
+.clock-inner {
+    position: relative;
+    z-index: 1;
+}
+
+/* --- Time Display --- */
+.time {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(8px, 2vw, 24px);
+    flex-wrap: wrap;
+}
+
+.digit-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.digit {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(2.5rem, 10vw, 6rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-primary);
+    text-shadow:
+        0 0 12px var(--neon-primary),
+        0 0 30px rgba(0, 229, 255, 0.4),
+        0 0 60px rgba(0, 229, 255, 0.15);
+    position: relative;
+    min-width: 1.6em;
+    text-align: center;
+    padding: 4px 8px;
+    background: rgba(0, 229, 255, 0.04);
+    border-radius: 12px;
+    border: 1px solid rgba(0, 229, 255, 0.08);
+    transition: text-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.digit:hover {
+    text-shadow:
+        0 0 16px var(--neon-primary),
+        0 0 40px rgba(0, 229, 255, 0.6),
+        0 0 80px rgba(0, 229, 255, 0.3);
+    transform: scale(1.04);
+}
+
+.seconds {
+    color: var(--neon-primary);
+    text-shadow:
+        0 0 14px var(--neon-primary),
+        0 0 40px rgba(0, 229, 255, 0.5);
+}
+
+.label {
+    font-size: clamp(0.5rem, 1.2vw, 0.7rem);
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+/* --- Separator (Colon Dots) --- */
+.separator {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 4px;
+    align-self: flex-start;
+    margin-top: clamp(12px, 3vw, 24px);
+}
+
+.dot {
+    width: clamp(6px, 1.2vw, 10px);
+    height: clamp(6px, 1.2vw, 10px);
+    border-radius: 50%;
+    background: var(--neon-primary);
+    box-shadow: 0 0 8px var(--neon-primary), 0 0 20px rgba(0, 229, 255, 0.4);
+    animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.75s;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.75); }
+}
+
+/* --- AM/PM Badge --- */
+.ampm-badge {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(0.7rem, 1.5vw, 1rem);
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.12), rgba(124, 77, 255, 0.12));
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    color: var(--neon-primary);
+    align-self: flex-start;
+    margin-top: clamp(8px, 2vw, 16px);
+    text-shadow: 0 0 8px var(--neon-primary);
+}
+
+/* --- Date Bar --- */
+.date-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: clamp(16px, 2.5vw, 28px);
+    padding: 10px 20px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    z-index: 1;
+}
+
+.date-icon {
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+}
+
+.date-text {
+    font-size: clamp(0.75rem, 1.8vw, 1rem);
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+/* --- Seconds Progress Ring --- */
+.progress-ring-container {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    width: clamp(40px, 6vw, 64px);
+    height: clamp(40px, 6vw, 64px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.progress-ring {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+    fill: none;
+    stroke: rgba(0, 229, 255, 0.08);
+    stroke-width: 3;
+}
+
+.progress-ring-fill {
+    fill: none;
+    stroke: var(--neon-primary);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 339.292;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 0.3s ease;
+    filter: drop-shadow(0 0 4px var(--neon-primary));
+}
+
+.progress-label {
+    position: absolute;
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(0.4rem, 0.8vw, 0.6rem);
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+}
+
+/* --- Animations --- */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .clock {
+        padding: 20px;
+        border-radius: 18px;
+    }
+
+    .separator {
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .ampm-badge {
+        margin-top: 8px;
+    }
+
+    .progress-ring-container {
+        top: 10px;
+        right: 12px;
+    }
+
+    .ambient-orb {
+        filter: blur(80px);
+        opacity: 0.25;
+    }
+
+    .ambient-orb-1 { width: 300px; height: 300px; }
+    .ambient-orb-2 { width: 280px; height: 280px; }
+    .ambient-orb-3 { width: 200px; height: 200px; }
+}
+
+@media (max-width: 480px) {
+    .clock {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .time {
+        gap: 6px;
+    }
+
+    .digit {
+        padding: 2px 4px;
+        border-radius: 8px;
+    }
+
+    .greeting {
+        letter-spacing: 0.15em;
+        font-size: 0.85rem;
+    }
+
+    .progress-ring-container {
+        width: 36px;
+        height: 36px;
+        top: 8px;
+        right: 8px;
+    }
 }
